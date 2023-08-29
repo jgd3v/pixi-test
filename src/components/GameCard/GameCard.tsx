@@ -10,7 +10,7 @@ import IconComponent from '../Common/IconComponent';
 import { useGame } from '../../hooks/game';
 import { STATUS_GAME } from '../../utils/types';
 import { useAppDispatch } from '../../hooks/store';
-import { bet } from '../../store/reducers/game.reducer';
+import { bet, win } from '../../store/reducers/game.reducer';
 
 interface IGameCardProps {
   width: number;
@@ -18,8 +18,9 @@ interface IGameCardProps {
   screenSize: string;
 }
 
+const userName = `USER_${new Date().getTime()}`;
+
 const GameCardComponent: React.FC<IGameCardProps> = (props) => {
-  const userName = `USER_${new Date().getTime()}`;
   const game = useGame();
   const dispatch = useAppDispatch();
   const [toggleOption, setToggleOption] = useState(0);
@@ -28,14 +29,27 @@ const GameCardComponent: React.FC<IGameCardProps> = (props) => {
   const disabledBetActions = game.hasBetActive || game.status === STATUS_GAME.GRAPHING;
   const onAmountChange = (e: ChangeEvent<HTMLInputElement>) => setAmount(e.target.value);
   const onMultiplierChange = (e: ChangeEvent<HTMLInputElement>) => setMultiplier(e.target.value);
-  const onBet = () => dispatch(bet({ amount, multiplier, userName }));
+  const onBetOrCashout = () => {
+    if (game.status === 'GRAPHING') {
+      const index = game.historical.length ? game.historical.length - 1 : 0;
+      dispatch(win({ index, payout: game.randomNumber }));
+    } else if (!game.hasBetActive) {
+      dispatch(bet({ amount, multiplier, userName }));
+    }
+  };
+  const multiplyOrDivide = (action = 'divide') => {
+    if (action === 'divide') setAmount((current) => (Number(current) / 2).toString());
+    else setAmount((current) => (Number(current) * 2).toString());
+  };
+
   const toggleButtonsText = ['Normal', 'Auto', 'Free'];
   const boardButtons = {
     amount: [
-      { content: <IconComponent name="divider-number" width={20} height={20} />, sx: null },
+      { content: <IconComponent name="divider-number" width={20} height={20} />, sx: {}, action: 'divide' },
       {
         content: '2X',
         sx: { color: '#FFFF' },
+        action: 'multiply',
       },
     ],
   };
@@ -44,6 +58,10 @@ const GameCardComponent: React.FC<IGameCardProps> = (props) => {
     <CardStyled elevation={5}>
       <CardContent sx={{ height: props.height }}>
         <Animation {...props} currentStatus={game.status} />
+        <div className="cashtout-displayed">
+          <h5>CURRENT PAYOUT</h5>
+          <h2>{game.randomNumber.toFixed(2)}X</h2>
+        </div>
         <BoardStyled>
           <FlexStyled className="item">
             <ToggleContainerStyled>
@@ -84,6 +102,7 @@ const GameCardComponent: React.FC<IGameCardProps> = (props) => {
                   key={index}
                   fullWidth
                   disabled={disabledBetActions}
+                  onClick={() => multiplyOrDivide(button.action)}
                 >
                   {button.content}
                 </Button>
@@ -108,10 +127,12 @@ const GameCardComponent: React.FC<IGameCardProps> = (props) => {
               <Button
                 variant="contained"
                 fullWidth
-                disabled={!game.hasBetActive && game.status === 'GRAPHING'}
-                onClick={onBet}
+                disabled={(!game.hasBetActive && game.status === 'GRAPHING') || game.winner}
+                onClick={onBetOrCashout}
               >
-                {game.hasBetActive ? 'CASHOUT' : 'ENTER ROUND'}
+                {game.status === 'GRAPHING' || game.hasBetActive
+                  ? `CASHOUT ${game.randomNumber.toFixed(2)}X`
+                  : 'ENTER ROUND'}
               </Button>
             </FlexStyled>
           </FlexStyled>

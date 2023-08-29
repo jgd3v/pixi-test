@@ -7,6 +7,25 @@ const CardStyled = styled(Card)(({ theme }) => ({
     width: '100%',
     position: 'relative',
     padding: 0,
+    '& .cashtout-displayed': {
+      position: 'absolute',
+      bottom: '260px',
+      display: 'flex',
+      width: '100%',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      textAlign: 'center',
+      alignItems: 'center',
+      [theme.breakpoints.up('sm')]: {
+        bottom: '280px',
+      },
+      [theme.breakpoints.up('md')]: {
+        bottom: '110px',
+      },
+      [theme.breakpoints.up('lg')]: {
+        bottom: '130px',
+      },
+    },
   },
   '& .MuiCardActions-root': {
     display: 'flex',

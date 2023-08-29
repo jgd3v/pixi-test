@@ -18,12 +18,14 @@ const TableComponent = () => {
         </TableHead>
         <TableBody>
           {game.historical.length ? (
-            game.historical.map((row, index) => (
+            game.historical.map(({ userName, amount, payout, win }, index) => (
               <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="center">{row.userName}</TableCell>
-                <TableCell align="center">€{Number(row.amount).toFixed(2)}</TableCell>
-                <TableCell align="center">{row.payout}</TableCell>
-                <TableCell align="center">{row.balance}</TableCell>
+                <TableCell align="center">{userName}</TableCell>
+                <TableCell align="center">€ {amount && Number(amount).toFixed(2)}</TableCell>
+                <TableCell align="center">{payout && payout.toFixed(2)}</TableCell>
+                <TableCell align="center" sx={{ color: win ? theme.palette.success.main : '#FFFFFF' }}>
+                  € {(amount && payout ? Number(amount) * payout : 0).toFixed(2)}
+                </TableCell>
               </TableRow>
             ))
           ) : (

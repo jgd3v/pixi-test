@@ -5,7 +5,7 @@ interface HistoricalValues {
   userName: string;
   amount: number;
   payout: number;
-  balance: number;
+  win: boolean;
 }
 
 interface InitialState {
@@ -14,14 +14,16 @@ interface InitialState {
   multiplier: Array<number>;
   randomNumber: number;
   hasBetActive: boolean;
+  winner: boolean;
 }
 
 const initialState: InitialState = {
   status: 'WAITING',
   historical: [],
   multiplier: [],
-  randomNumber: Math.random() * 100 + 1,
+  randomNumber: 1,
   hasBetActive: false,
+  winner: false,
 };
 
 const game = createSlice({
@@ -32,17 +34,34 @@ const game = createSlice({
       return { ...state, status: payload };
     },
     setRandomNumber(state) {
-      return { ...state, randomNumber: Math.random() * 100 + 1 };
+      return { ...state, randomNumber: state.randomNumber + Math.random() * 0.1 };
     },
     bet(state, { payload }) {
-      return { ...state, historical: [...state.historical, payload], hasBetActive: true };
+      return { ...state, historical: [...state.historical, { ...payload, win: false }], hasBetActive: true };
+    },
+    win(state, { payload }) {
+      return {
+        ...state,
+        historical: [
+          ...state.historical.map((post, index) =>
+            index === payload.index ? { ...post, payout: payload.payout, win: true } : post
+          ),
+        ],
+        winner: true,
+      };
     },
     resetBet(state) {
-      return { ...state, hasBetActive: false };
+      return {
+        ...state,
+        multiplier: [...state.multiplier, state.randomNumber],
+        hasBetActive: false,
+        randomNumber: 1,
+        winner: false,
+      };
     },
   },
 });
 
-export const { setToPlay, setRandomNumber, bet, resetBet } = game.actions;
+export const { setToPlay, setRandomNumber, bet, resetBet, win } = game.actions;
 
 export default game.reducer;
