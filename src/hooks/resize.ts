@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-const useResize = (element: HTMLElement | null) => {
+export const useResize = (element: HTMLElement | null) => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
     const updateSize = () => {
@@ -13,5 +13,3 @@ const useResize = (element: HTMLElement | null) => {
   }, [element]);
   return size;
 };
-
-export default useResize;

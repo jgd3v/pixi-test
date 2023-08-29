@@ -15,7 +15,7 @@ const TextFieldStyled = styled(TextField)(({ theme }) => ({
       padding: '25px 14px 10px',
       fontWeight: 'bold',
       [theme.breakpoints.up('md')]: {
-        padding: '22px 14px 7px',
+        padding: '20px 14px 7px',
       },
       [theme.breakpoints.up('lg')]: {
         padding: '31px 14px 10px',
@@ -43,7 +43,8 @@ TextFieldStyled.defaultProps = {
   InputLabelProps: {
     shrink: true,
   },
-  InputProps: { readOnly: true },
+  type: 'number',
+  inputMode: 'numeric',
 };
 
 export default TextFieldStyled;

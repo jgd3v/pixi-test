@@ -13,9 +13,9 @@ const BoardStyled = styled('div')(({ theme }) => ({
   bottom: '0',
   padding: theme.spacing(1),
   flexFlow: 'column',
-  paddingTop: '10%',
+  justifyContent: 'flex-end',
   [theme.breakpoints.up('sm')]: {
-    height: '300px',
+    height: '280px',
   },
   [theme.breakpoints.up('md')]: {
     background: `url(${boardDesktop}) no-repeat`,

@@ -1,30 +1,26 @@
-import { useRef, useState, useEffect } from 'react';
-import { useMediaQuery, useTheme } from '@mui/material';
-import { Container } from '@mui/material';
-import useResize from '../hooks/useResize';
+import { useRef } from 'react';
+import { useTheme, Container } from '@mui/material';
 import Header from '../components/Header';
-import Animation from '../components/Animation';
+import GameCard from '../components/GameCard';
+import Table from '../components/Table';
+import { useResize } from '../hooks/resize';
+import { useScreenWidth } from '../hooks/screenWidth';
+import { usePlay } from '../hooks/play';
 
 const HomePage = () => {
   const refContainer = useRef(null);
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.between('xs', 'sm'));
+  const currentScreenWidth = useScreenWidth();
+  const isSmallDevice = ['xs', 'sm'].includes(currentScreenWidth);
   const [clientWidth] = useResize(refContainer.current);
-  const [appWidth, setAppWidth] = useState(clientWidth / 2);
-
-  useEffect(() => {
-    setAppWidth(!isSmallDevice ? clientWidth - 48 : clientWidth);
-  }, [clientWidth, isSmallDevice]);
+  usePlay();
 
   return (
     <>
       <Header />
-      <Container
-        ref={refContainer}
-        sx={{ padding: isSmallDevice ? theme.spacing(1) : theme.spacing(2), height: 600 }}
-        maxWidth="lg"
-      >
-        <Animation width={appWidth} height={600} />
+      <Container ref={refContainer} sx={{ padding: isSmallDevice ? theme.spacing(1) : theme.spacing(2) }} maxWidth="lg">
+        <GameCard width={clientWidth} height={600} screenSize={currentScreenWidth} />
+        <Table />
       </Container>
     </>
   );

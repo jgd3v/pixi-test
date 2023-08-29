@@ -1,168 +1,90 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Box, Button, CardActions, CardContent, InputAdornment } from '@mui/material';
-import { Stage, Sprite, Container } from '@pixi/react';
-import useBreakPoint from '../../hooks/useBreakpoint';
+import { useEffect, useState } from 'react';
+import { Assets, Texture } from 'pixi.js';
+import { Stage, Sprite, Container, AnimatedSprite } from '@pixi/react';
+import { loadFileUrl } from '../../utils/helper';
 import stadium from '../../assets/stadium.png';
-import player from '../../assets/player.png';
-import { ReactComponent as ZoomIcon } from '../../assets/icons/zoom-icon.svg';
-import { ReactComponent as RefreshIcon } from '../../assets/icons/refresh-icon.svg';
-import { ReactComponent as VolumeIcon } from '../../assets/icons/volume-icon.svg';
-import { ReactComponent as StatsIcon } from '../../assets/icons/stats-icon.svg';
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-icon.svg';
-import { ReactComponent as DividerNumber } from '../../assets/icons/divider-number.svg';
-import { ReactComponent as CurrencyIcon } from '../../assets/icons/currency-icon.svg';
-import { ReactComponent as RemoveIcon } from '../../assets/icons/remove-icon.svg';
-import BoardStyled from './Styled/Board.styled';
-import CardStyled from './Styled/Card.styled';
-import TextFieldStyled from './Styled/TextField.styled';
-import ToggleContainerStyled from './Styled/ToggleContainer.styed';
-import FlexStyled from '../Common/Flex.styled';
+import goal from '../../assets/goal-1.png';
+import Ball from './Ball';
+import { GameStates, STATUS_GAME } from '../../utils/types';
 
 interface AnimationProps {
   width: number;
   height: number;
+  screenSize: string;
+  currentStatus: GameStates;
 }
+const AnimationComponent: React.FC<AnimationProps> = ({ width, height, screenSize, currentStatus }) => {
+  const [textures, setTextures] = useState([]);
+  const [currentFrames, setCurrentFrames] = useState(0);
+  const [isRunnigAllAnimation, setIsRunnigAllAnimation] = useState(false);
+  const [play, setPlay] = useState(false);
+  const [showBall, setShowBall] = useState(false);
+  const onFrameChange = () => setCurrentFrames((value) => value + 1);
 
-interface ISpriteConfigProps {
-  width?: number;
-  height?: number;
-  x?: number;
-  y?: number;
-}
-
-const AnimationComponent: React.FC<AnimationProps> = ({ width, height }) => {
-  const [toggleOption, setToggleOption] = useState(0);
-  const mobileValues = useMemo(
-    () => ({
-      stadium: {
-        width: width * 2,
-        height,
-        y: -100,
-      },
-      player: {
-        width: 160,
-        height: 180,
-        y: height - 420,
-      },
-    }),
-    [width, height]
-  );
-  const [configSprite, setConfigSprite] = useState<Record<string, ISpriteConfigProps>>({
-    ...mobileValues,
-  });
-  const toggleButtonsText = ['Normal', 'Auto', 'Free'];
-  const boardButtons = {
-    amount: [
-      { content: <DividerNumber width={20} height={20} />, sx: null },
-      {
-        content: '2X',
-        sx: { color: '#FFFF' },
-      },
-    ],
+  const playBall = () => {
+    setPlay(false);
+    setCurrentFrames(0);
+    setShowBall(true);
   };
-  const isSmallDevice = useBreakPoint(['sm'], 'up');
-  const isMediumlDevice = useBreakPoint(['md'], 'up');
 
   useEffect(() => {
-    if (isSmallDevice) {
-      setConfigSprite(mobileValues);
-    } else if (isMediumlDevice) {
-      console.log('medium');
-      setConfigSprite({
-        stadium: { ...mobileValues.stadium, y: -4000 },
-        player: { ...mobileValues.player },
-      });
-    } else {
-      setConfigSprite({ stadium: { width, height, y: 0 }, player: { y: 210, width: 230, height: 250 } });
+    const loadSprite = async (alias: string, url: string) => {
+      Assets.add(alias, loadFileUrl(url));
+      await Assets.load(alias);
+      return Assets.get(alias);
+    };
+
+    const loadPlayerAsset = async () => {
+      const assetPlayer = await loadSprite('player', 'sprites/player.json');
+      setTextures(
+        assetPlayer.data.animations['neymar'].map((frame: string) => Texture.from(loadFileUrl(`sprites/${frame}`)))
+      );
+    };
+    loadPlayerAsset();
+  }, []);
+
+  useEffect(() => {
+    if (currentStatus === STATUS_GAME.GRAPHING && !isRunnigAllAnimation) {
+      setShowBall(false);
+      setPlay(true);
     }
-  }, [isSmallDevice, isMediumlDevice, width, height, mobileValues]);
+    if (currentStatus === STATUS_GAME.COMPLETED) {
+      setIsRunnigAllAnimation(currentStatus !== STATUS_GAME.COMPLETED);
+    }
+  }, [currentStatus, isRunnigAllAnimation]);
+
+  useEffect(() => {
+    if (currentFrames === 5) playBall();
+  }, [currentFrames]);
+
+  const getAxisY = () => {
+    if (screenSize === 'sm') return 175;
+    if (screenSize === 'xs') return 185;
+    return 280;
+  };
 
   return (
-    <CardStyled elevation={5}>
-      <CardContent sx={{ height }}>
-        <Stage width={width} height={height}>
-          <Container>
-            <Sprite image={stadium} width={width} height={height} y={0} />
-            <Sprite image={player} width={160} height={180} y={height - 320} />
-          </Container>
-        </Stage>
-        <BoardStyled>
-          <FlexStyled className="item">
-            <ToggleContainerStyled>
-              {toggleButtonsText.map((value: string, index: number) => (
-                <Button
-                  variant={toggleOption === index ? 'contained' : 'text'}
-                  color="success"
-                  fullWidth
-                  key={index}
-                  sx={{ color: toggleOption === index ? '#0F1821' : '#FFF' }}
-                  onClick={() => setToggleOption(index)}
-                >
-                  {value}
-                </Button>
-              ))}
-            </ToggleContainerStyled>
-          </FlexStyled>
-          <FlexStyled className="item">
-            <TextFieldStyled
-              label="AMOUNT"
-              value={200}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <CurrencyIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <FlexStyled padding={0}>
-              {boardButtons.amount.map((button, index: number) => (
-                <Button color="success" variant="outlined" sx={button.sx} key={index} fullWidth>
-                  {button.content}
-                </Button>
-              ))}
-            </FlexStyled>
-          </FlexStyled>
-          <FlexStyled className="item">
-            <TextFieldStyled
-              label="AUTOCASH (MULTIPLIER)"
-              value={200}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <RemoveIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <FlexStyled padding={0}>
-              <Button variant="contained" fullWidth>
-                CASHOUT 21.22X
-              </Button>
-            </FlexStyled>
-          </FlexStyled>
-        </BoardStyled>
-      </CardContent>
-      <CardActions>
-        <Button variant="outlined" color="secondary">
-          <ZoomIcon />
-        </Button>
-        <Box>
-          <Button variant="outlined" color="secondary">
-            <RefreshIcon />
-          </Button>
-          <Button variant="outlined" color="secondary">
-            <VolumeIcon />
-          </Button>
-          <Button variant="outlined" color="secondary">
-            <StatsIcon />
-          </Button>
-          <Button variant="outlined" color="secondary">
-            <InfoIcon />
-          </Button>
-        </Box>
-      </CardActions>
-    </CardStyled>
+    <Stage width={width} height={height} options={{ autoDensity: true }}>
+      <Container position={[0, 0]}>
+        {currentStatus !== STATUS_GAME.COMPLETED ? (
+          <Sprite image={stadium} width={width} height={height} />
+        ) : (
+          <Sprite image={goal} width={width} height={height} y={0} />
+        )}
+        <AnimatedSprite
+          isPlaying={play}
+          textures={textures}
+          animationSpeed={0.1}
+          onFrameChange={onFrameChange}
+          width={160}
+          height={180}
+          y={getAxisY()}
+        />
+        {showBall && (
+          <Ball appWidth={width} appHeight={height} endAnimation={currentStatus === STATUS_GAME.COMPLETED} />
+        )}
+      </Container>
+    </Stage>
   );
 };
 

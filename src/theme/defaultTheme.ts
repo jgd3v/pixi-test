@@ -29,11 +29,18 @@ const theme = createTheme({
         },
       },
     },
-    MuiCardActions: {
+    MuiCard: {
       styleOverrides: {
         root: {
           background: '#0E1821',
           borderRadius: 0,
+        },
+      },
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          background: '#0E1821',
         },
       },
     },

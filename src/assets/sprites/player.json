@@ -1,0 +1,118 @@
+{
+  "frames": {
+    "neymar-1.png": {
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 400,
+        "h": 460
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 400,
+        "h": 460
+      },
+      "sourceSize": {
+        "w": 400,
+        "h": 460
+      }
+    },
+    "neymar-2.png": {
+      "frame": {
+        "x": 403,
+        "y": 1,
+        "w": 400,
+        "h": 460
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 400,
+        "h": 460
+      },
+      "sourceSize": {
+        "w": 400,
+        "h": 460
+      }
+    },
+    "neymar-3.png": {
+      "frame": {
+        "x": 1,
+        "y": 463,
+        "w": 400,
+        "h": 460
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 400,
+        "h": 460
+      },
+      "sourceSize": {
+        "w": 400,
+        "h": 460
+      }
+    },
+    "neymar-4.png": {
+      "frame": {
+        "x": 403,
+        "y": 463,
+        "w": 400,
+        "h": 460
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 400,
+        "h": 460
+      },
+      "sourceSize": {
+        "w": 400,
+        "h": 460
+      }
+    },
+    "neymar-5.png": {
+      "frame": {
+        "x": 805,
+        "y": 1,
+        "w": 400,
+        "h": 460
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 400,
+        "h": 460
+      },
+      "sourceSize": {
+        "w": 400,
+        "h": 460
+      }
+    }
+  },
+  "animations": {
+    "neymar": ["neymar-1.png", "neymar-2.png", "neymar-3.png", "neymar-4.png", "neymar-5.png"]
+  },
+  "meta": {
+    "app": "http://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "player.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1206,
+      "h": 924
+    },
+    "scale": "1"
+  }
+}
