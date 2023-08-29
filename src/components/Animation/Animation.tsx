@@ -48,9 +48,7 @@ const AnimationComponent: React.FC<AnimationProps> = ({ width, height, screenSiz
       setShowBall(false);
       setPlay(true);
     }
-    if (currentStatus === STATUS_GAME.COMPLETED) {
-      setIsRunnigAllAnimation(currentStatus !== STATUS_GAME.COMPLETED);
-    }
+    setIsRunnigAllAnimation(currentStatus !== STATUS_GAME.COMPLETED);
   }, [currentStatus, isRunnigAllAnimation]);
 
   useEffect(() => {
